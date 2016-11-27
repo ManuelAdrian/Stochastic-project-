@@ -147,3 +147,5 @@ for i2=1:100
 %h2a = plot([0:Dt:T],[x1_0,X1], 'LineWidth',.5); h2a.Color(4)=0.3;
 %hold on
 end
+
+%%%%%% Prueba %%%%%%
