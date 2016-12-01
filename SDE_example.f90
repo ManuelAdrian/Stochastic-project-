@@ -7,16 +7,16 @@ integer, parameter :: dp1 = selected_real_kind(15, 307)
 
 integer,parameter :: N = 2**8, R1 = 2.0d0, L = N/R1, N1 = 10000.0d0
 
-real(kind=dp) :: r,sigma,S0,dt,Dt1,Xtemp,Winc,Esp1,Var0	
+real(kind=dp) :: r,sigma,S0,dt,Dt1,Xtemp,Winc,Esp1,Var0,dttemp,Wtemp		
 
 real(kind=dp1) :: T
 
-real :: pi, temp, mean, sd, dW(N), Xe(N1,L), array(N1,N), Esp(L), Var(L)
+real :: pi, temp, mean, sd, dW(N), Xe(N1,L), array(N1,N), Esp(L), Var(L), Strue(N)
 integer :: i,j,i1
 
 100     FORMAT(1X,8000E17.6E3) !Printing format
 !110     FORMAT(A,F5.3)
-CHARACTER(15) filename, filename1, filename2
+CHARACTER(15) filename, filename1, filename2, filename3
 
 !$$$$$$$$$$$$ Distribucion Normal $$$$$$$$$$$$!
 mean = 0.0d0
@@ -35,8 +35,6 @@ END DO
 
 !$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$!
 
-dW = SQRT(dt)*array(i1,:)
-
 r = 0.05d0
 sigma = 0.2d0
 S0 = 1.0d0
@@ -44,6 +42,29 @@ T = 1.0d0
 dt = T/N
 Dt1 = R1*dt
 Xtemp = S0
+dttemp = dt
+
+
+dW = SQRT(dt)*array(i1,:)
+
+Wtemp = 0.0d0
+
+filename3 = 'solu_exact.dat'
+OPEN(UNIT=48,FILE=filename3,position="APPEND")
+write(48,100) S0
+
+DO j = 1, N
+Wtemp = Wtemp + dW(j)
+dttemp = dttemp + dt
+
+Strue(j) = S0*exp((r-0.5d0*(sigma**2))*dttemp+sigma*Wtemp)
+write(48,100) Strue(j)
+END DO
+
+CLOSE(48)
+
+
+
 
 DO j = 1, L
 Winc = sum(dW(R1*(j-1)+1: R1*j))
